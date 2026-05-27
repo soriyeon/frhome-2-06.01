@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749821350329",
+    "project_id": "friend-home-planner",
+    "storage_bucket": "friend-home-planner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749821350329:android:03206e4484c402b6fc2668",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtU7v_LelbVQEd0u5C1BVm_c1DZwuYroc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
