@@ -43,6 +43,9 @@ dependencies:
   google_sign_in: ^6.1.0
   image_picker: ^1.2.2
   shared_preferences: ^2.5.5
+  kakao_flutter_sdk_user: ^1.9.0
+  webview_flutter: ^4.10.0
+  google_fonts: ^6.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,7 +68,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/images/cat 1.png
+    - assets/images/cat.png
+    - assets/images/egg.png
+    - assets/images/kakao_logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
