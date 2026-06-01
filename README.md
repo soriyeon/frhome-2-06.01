@@ -1,17 +1,111 @@
-# flutter_application_1
+## 프홈 개발 현황 정리 (2026.06.01)
 
-A new Flutter project.
+---
 
-## Getting Started
+### ✅ 구현 완료
 
-This project is a starting point for a Flutter application.
+**기본 기능**
+- 전체 레이아웃 (스크롤 없이 화면 꽉 차게)
+- 포모도로 타이머 3가지 모드 (OFF / 25분+5분 / 55분+5분)
+- 주간 달력 (날짜 선택, 좌우 스와이프)
+- 투두리스트 (추가/체크/수정/슬라이드 삭제, Firebase 저장)
+- 투두 체크박스 아이콘만 표시 (테두리/배경 제거)
+- 텍스트 터치해도 투두 완료 토글
+- 투두 하단 `+` 버튼 (가로 전체 터치 가능)
 
-A few resources to get you started if this is your first Flutter project:
+**사진 기능**
+- 카메라 촬영 → Firebase Storage 저장
+- 앱 껐다 켜도 유지
+- 사진 있을 때 누르면 미리보기 → 재촬영/삭제/닫기 선택 가능
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+**다마고치**
+- egg.png 직접 제작 (Piskel), 숨쉬는 애니메이션
+- XP 시스템 Firestore 연동 (기기 바꿔도 유지)
+- 레벨업 로직 (egg → baby → adult)
+- 랜덤 동물 배정 함수 (`_assignRandomPet`)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**계정/소셜**
+- 앱 설치 시 고유 코드 자동 생성 (KITTY-8419 형식)
+- Google 로그인
+- 카카오 로그인 (에뮬레이터 테스트 불가, 실기기 필요)
+- 로그인 시 구글 계정에 코드 연결 (기기 연동)
+- 두 번째 기기 로그인 시 임시 코드 삭제 + 기존 코드로 교체
+- `onCodeChanged` 콜백으로 홈화면 자동 갱신
+
+**친구**
+- 친구 추가/수락/거절
+- 친구 요청 알림 빨간 점
+- 친구 관리 화면
+- 친구 페이지 (사진/투두 읽기 전용)
+
+**테마**
+- `AppTheme` 클래스 구조 완성
+- 7가지 테마 (기본/Rose Coffee/Strawberry Choco/Matcha Blossom/Chocolate Soda/Lemon Deck/Red Fish)
+- 설정에서 아코디언 방식으로 테마 선택
+- 선택한 테마 `SharedPreferences` 에 저장 (앱 껐다 켜도 유지)
+- 완료 아이콘 설정 (15가지)
+
+**기타**
+- Noto Sans 폰트 적용
+- 개인정보처리방침 페이지 (GitHub Pages 호스팅, 인앱 웹뷰)
+- 도감 화면 틀 (준비 중 상태)
+- 앱바에 도감 버튼 추가
+
+---
+
+### 🔄 하다가 중단된 것들
+
+**사진 영역 반투명 유리 효과**
+- `BackdropFilter` + `blur` 적용했으나 단색 배경이라 효과 미미
+- 피그마에서 `2B2B2A` 22% 불투명도로 설정한 값 적용 시도 중
+- 완전한 유리 느낌은 배경에 복잡한 요소 있어야 가능
+
+**카카오 로그인 에뮬레이터 테스트**
+- x86_64 에뮬레이터에서 카카오 SDK 클래스 못 찾는 오류
+- arm64 에뮬레이터 시도했으나 Windows Hyper-V 문제로 실행 안 됨
+- 코드는 정상, 실기기에서 테스트 필요
+
+**다마고치 텍스트 가시성**
+- 경험치 바, xp 수치 텍스트가 흰색 계열 테마에서 안 보임
+- 그림자 효과 추가 필요
+
+---
+
+### ⬜ 앞으로 할 것
+
+**우선순위 높음**
+- 다마고치 새끼/성체 이미지 제작 및 연결
+  - 꼬물이(색깔만 힌트, 정체 모름) → 성체(정체 공개) 컨셉
+  - 성체 후보: itch.io 무료 에셋 또는 AI 생성
+- 다마고치 텍스트 그림자 효과
+- 도감 기능 구현 (이미지 생기면)
+- 테마 앱 껐다 켜도 적용되게 (지금은 설정에서 선택만 저장, 홈화면 재적용 안 됨)
+
+**디자인**
+- 사진 영역 반투명 효과 완성
+- 전체 UI 세부 디자인 (피그마 작업 병행)
+- 달력/투두 영역 포인트 색상 테마 연동
+
+**기능**
+- 친구 마을 즐겨찾기 기능
+- 친구 마을 픽셀 배경 애니메이션
+- 테마 커스텀 색상 피커 (나중에)
+- 카카오 로그인 실기기 테스트
+
+**출시 준비**
+- 앱 이름/아이콘 설정
+- 플레이스토어 등록
+- iOS 출시 (Mac 환경 구해서)
+
+---
+
+### 📦 사용 패키지
+`table_calendar` `firebase_core` `cloud_firestore` `firebase_auth` `firebase_storage` `google_sign_in` `kakao_flutter_sdk_user` `image_picker` `flutter_slidable` `shared_preferences` `webview_flutter` `google_fonts`
+
+---
+
+### ⚠️ 알려진 버그/주의사항
+- `_toggleTodo` 함수에 XP 카운트 중복 증가 코드 있음 (나중에 수정 필요)
+- `_loadXpData` 에서 `tetType` 오타 있음 (`petType` 으로 수정 필요)
+- `print` 문 출시 전 전부 제거 필요
+- `_petType`, `_petVariant` 변수 현재 미사용 경고
