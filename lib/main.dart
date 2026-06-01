@@ -74,6 +74,72 @@ class AppTheme {
     textPrimary: Color(0xFF000000),
     textSecondary: Color(0xFF666666),
   );
+
+  static const AppTheme roseCoffee = AppTheme(
+    background: Color(0xFFFFF3F9),
+    catCard: Color(0xFFFFF8FA),
+    photoCard: Color(0xFFFFF3F9),
+    timerCard: Color(0xFF82776B),
+    todoCard: Color(0xFFD9B4C4),
+    friendCard: Color(0xFFFFF8FA),
+    textPrimary: Color(0xFF000000),
+    textSecondary: Color(0xFF666666),
+  );
+
+  static const AppTheme strawberryChoco = AppTheme(
+    background: Color(0xFF4B443E),
+    catCard: Color(0xFFF6F4F2),
+    photoCard: Color(0xFFF6F4F2),
+    timerCard: Color(0xFF2D2D2D),
+    todoCard: Color(0xFFE4BADE),
+    friendCard: Color(0xFF8E7C7C),
+    textPrimary: Color(0xFFFFFFFF),
+    textSecondary: Color(0xFFCCCCCC),
+  );
+
+  static const AppTheme Matchablossom = AppTheme(
+    background: Color(0xFFEACFD9),
+    catCard: Color(0xFFEACFD9),
+    photoCard: Color(0xFFF9F6F4),
+    timerCard: Color(0xFFEAE4D6),
+    todoCard: Color.fromARGB(255, 140, 143, 100),
+    friendCard: Color(0xFFBEC5B0),
+    textPrimary: Color(0xFF000000),
+    textSecondary: Color(0xFF666666),
+  );
+
+  static const AppTheme chocolateSoda = AppTheme(
+    background: Color(0xFFE6E4E0),
+    catCard: Color(0xFFF2EDE4),
+    photoCard: Color(0xFFE6E4E0),
+    timerCard: Color(0xFFC4C0B8),
+    todoCard: Color(0xFF9AA3B6),
+    friendCard: Color(0xFF25190E),
+    textPrimary: Color(0xFF000000),
+    textSecondary: Color(0xFF666666),
+  );
+
+  static const AppTheme lemonDeck = AppTheme(
+    background: Color(0xFFD8D1C9),
+    catCard: Color(0xFF83776F),
+    photoCard: Color(0xFFD8D1C9),
+    timerCard: Color(0xFFFCFBF3),
+    todoCard: Color(0xFFEBDB9F),
+    friendCard: Color(0xFF1C1B19),
+    textPrimary: Color(0xFF000000),
+    textSecondary: Color(0xFF666666),
+  );
+
+  static const AppTheme redFish = AppTheme(
+    background: Color(0xFFFBF8F8),
+    catCard: Color(0xFF2B1F1F),
+    photoCard: Color(0xFFFBF8F8),
+    timerCard: Color(0xFFB94A4A),
+    todoCard: Color(0xFFD7DAE6),
+    friendCard: Color(0xFF161E33),
+    textPrimary: Color(0xFF000000),
+    textSecondary: Color(0xFF666666),
+  );
 }
 
 class TodoItem {
@@ -124,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _catFrame = 0;
   Timer? _catTimer;
 
-  final AppTheme _currentTheme = AppTheme.defaultTheme;
+  AppTheme _currentTheme = AppTheme.defaultTheme;
 
   final _db = FirebaseFirestore.instance;
 
@@ -513,6 +579,50 @@ class _HomeScreenState extends State<HomeScreen> {
     return 1.0;
   }
 
+  void _onPhotoAreaTap() {
+    if (_photoUrl != null || _photoFile != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: _photoUrl != null
+              ? Image.network(_photoUrl!, fit: BoxFit.cover)
+              : Image.file(_photoFile!, fit: BoxFit.cover),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('닫기'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await _pickImage();
+              },
+              child: const Text('재촬영'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('photo_url');
+                await _db
+                    .collection('users')
+                    .doc(_myCode)
+                    .update({'photoUrl': FieldValue.delete()});
+                setState(() {
+                  _photoUrl = null;
+                  _photoFile = null;
+                });
+              },
+              child: const Text('삭제', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+    } else {
+      _pickImage();
+    }
+  }
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.camera);
@@ -581,6 +691,13 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: _currentTheme.background,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.menu_book, color: Colors.grey),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PokdexScreen()),
+            ),
+          ),
           Stack(
             children: [
               IconButton(
@@ -621,6 +738,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onCodeChanged: (newCode) {
                     setState(() => _myCode = newCode);
                     _loadTodos();
+                  },
+                  onThemeChanged: (theme) {
+                    setState(() => _currentTheme = theme);
                   },
                 ),
               ),
@@ -708,47 +828,56 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Expanded(
                             flex: _pomodoroMode == 'off' ? 5 : 3,
-                            child: Container(
-                              margin: const EdgeInsets.fromLTRB(0, 6, 6, 3),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: GestureDetector(
-                                onTap: _pickImage,
-                                child: _photoUrl != null
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Image.network(_photoUrl!,
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            height: double.infinity),
-                                      )
-                                    : _photoFile != null
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: BackdropFilter(
+                                filter:
+                                    ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  margin: const EdgeInsets.fromLTRB(0, 6, 6, 3),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0x382B2B2A),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: _onPhotoAreaTap,
+                                    child: _photoUrl != null
                                         ? ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(12),
-                                            child: Image.file(_photoFile!,
+                                            child: Image.network(_photoUrl!,
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
                                                 height: double.infinity),
                                           )
-                                        : const Center(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.camera_alt,
-                                                    size: 28,
-                                                    color: Colors.grey),
-                                                SizedBox(height: 4),
-                                                Text('사진 추가',
-                                                    style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.grey)),
-                                              ],
-                                            ),
-                                          ),
+                                        : _photoFile != null
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Image.file(_photoFile!,
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    height: double.infinity),
+                                              )
+                                            : const Center(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.camera_alt,
+                                                        size: 28,
+                                                        color: Colors.grey),
+                                                    SizedBox(height: 4),
+                                                    Text('',
+                                                        style: TextStyle(
+                                                            fontSize: 11,
+                                                            color:
+                                                                Colors.grey)),
+                                                  ],
+                                                ),
+                                              ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1217,7 +1346,9 @@ class _FriendPageState extends State<FriendPage> {
                                           height: 22,
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                                color: Colors.teal, width: 2),
+                                              color: const Color(0x602B2B2A),
+                                              width: 1.5,
+                                            ),
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                             color: todo['isDone']
@@ -1333,6 +1464,7 @@ class SettingsScreen extends StatefulWidget {
   final Function(String) onModeChanged;
   final Function(String) onIconChanged;
   final Function(String) onCodeChanged;
+  final Function(AppTheme) onThemeChanged;
 
   const SettingsScreen({
     super.key,
@@ -1341,6 +1473,7 @@ class SettingsScreen extends StatefulWidget {
     required this.onModeChanged,
     required this.onIconChanged,
     required this.onCodeChanged,
+    required this.onThemeChanged,
   });
 
   @override
@@ -1351,11 +1484,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   User? _user = FirebaseAuth.instance.currentUser;
   bool _kakaoLoggedIn = false;
   late String _pomodoroMode;
+  bool _themeExpanded = false;
+  String _selectedTheme = 'default';
 
   @override
   void initState() {
     super.initState();
     _pomodoroMode = widget.pomodoroMode;
+    _loadSelectedTheme();
+  }
+
+  Future<void> _loadSelectedTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final theme = prefs.getString('selected_theme') ?? 'default';
+    setState(() => _selectedTheme = theme);
   }
 
   Future<void> _saveCompletionIcon(String icon) async {
@@ -1623,6 +1765,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Widget _buildThemeTile(String themeKey, String themeName) {
+    final isSelected = _selectedTheme == themeKey;
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 56, right: 16),
+      title: Text(themeName),
+      trailing:
+          isSelected ? const Icon(Icons.check, color: Colors.deepPurple) : null,
+      onTap: () {
+        setState(() {
+          _selectedTheme = themeKey;
+          _themeExpanded = false;
+        });
+        _applyTheme(themeKey);
+      },
+    );
+  }
+
+  void _applyTheme(String themeKey) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_theme', themeKey);
+    AppTheme theme;
+    switch (themeKey) {
+      case 'roseCoffee':
+        theme = AppTheme.roseCoffee;
+        break;
+      case 'strawberryChoco':
+        theme = AppTheme.strawberryChoco;
+        break;
+      case 'Matchablossom':
+        theme = AppTheme.Matchablossom;
+        break;
+      case 'chocolateSoda':
+        theme = AppTheme.chocolateSoda;
+        break;
+      case 'lemonDeck':
+        theme = AppTheme.lemonDeck;
+        break;
+      case 'redFish':
+        theme = AppTheme.redFish;
+        break;
+      default:
+        theme = AppTheme.defaultTheme;
+    }
+    widget.onThemeChanged(theme);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1763,9 +1951,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.palette, color: Colors.deepPurple),
             title: const Text('테마 설정'),
-            subtitle: const Text('포근뽀용 / 깔끔모던시크'),
-            onTap: () {},
+            trailing: Icon(
+              _themeExpanded ? Icons.expand_less : Icons.expand_more,
+              color: Colors.grey,
+            ),
+            onTap: () => setState(() => _themeExpanded = !_themeExpanded),
           ),
+          if (_themeExpanded) ...[
+            _buildThemeTile('default', '기본'),
+            _buildThemeTile('roseCoffee', 'Rose Coffee'),
+            _buildThemeTile('strawberryChoco', 'Strawberry Choco'),
+            _buildThemeTile('blossomMatcha', 'Matcha blossom'),
+            _buildThemeTile('chocolateSoda', 'Chocolate Soda'),
+            _buildThemeTile('lemonDeck', 'Lemon Deck'),
+            _buildThemeTile('redFish', 'Red Fish'),
+          ],
           ListTile(
             leading: const Icon(Icons.check_circle, color: Colors.deepPurple),
             title: const Text('완료 아이콘 설정'),
@@ -1781,6 +1981,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PokdexScreen extends StatelessWidget {
+  const PokdexScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF5F5F5),
+        elevation: 0,
+        title: const Text('도감', style: TextStyle(color: Colors.black87)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: const Center(
+        child: Text('동물 도감 준비 중...', style: TextStyle(color: Colors.grey)),
       ),
     );
   }
